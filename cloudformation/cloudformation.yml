@@ -1,0 +1,62 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Resources:
+  AmplifyApp:
+    Type: AWS::Amplify::App
+    Properties:
+      Name: "MiAmplifyApp"
+      Repository: "https://github.com/tu-repo"
+      OauthToken: !Sub "{{resolve:secretsmanager:amplify-github-token}}"
+      IamServiceRole: "arn:aws:iam::108664390781:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_AdministratorAccess_df2ed47cdc0882a0"
+      BuildSpec: |
+      version: 1
+      frontend:
+        phases:
+          preBuild:
+            commands:
+              - yarn install  # Instala dependencias
+          build:
+            commands:
+              - yarn build  # Ejecuta "tsc -b && vite build"
+        artifacts:
+          baseDirectory: dist  # Asegúrate de que Vite genera los archivos aquí
+          files:
+            - '**/*'
+        cache:
+          paths:
+            - node_modules/**/*
+            - .yarn/cache/**/*
+
+  AmplifyBranch:
+    Type: AWS::Amplify::Branch
+    Properties:
+      AppId: !GetAtt AmplifyApp.AppId
+      BranchName: "main"
+      EnableAutoBuild: true
+
+  AmplifyBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "amplify-app-bucket-${AWS::AccountId}"
+
+  AmplifyBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref AmplifyBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: amplify.amazonaws.com
+            Action:
+              - "s3:GetObject"
+              - "s3:PutObject"
+            Resource: !Sub "arn:aws:s3:::${AmplifyBucket}/*"
+
+Outputs:
+  AmplifyAppId:
+    Value: !GetAtt AmplifyApp.AppId
+    Description: "ID de la app de Amplify"
+  S3BucketName:
+    Value: !Ref AmplifyBucket
+    Description: "Nombre del bucket S3"
