@@ -8,23 +8,23 @@ Resources:
       OauthToken: !Sub "{{resolve:secretsmanager:amplify-github-token}}"
       IamServiceRole: "arn:aws:iam::108664390781:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_AdministratorAccess_df2ed47cdc0882a0"
       BuildSpec: |
-      version: 1
-      frontend:
-        phases:
-          preBuild:
-            commands:
-              - yarn install  # Instala dependencias
-          build:
-            commands:
-              - yarn build  # Ejecuta "tsc -b && vite build"
-        artifacts:
-          baseDirectory: dist  # Asegúrate de que Vite genera los archivos aquí
-          files:
-            - '**/*'
-        cache:
-          paths:
-            - node_modules/**/*
-            - .yarn/cache/**/*
+        version: 1
+        frontend:
+          phases:
+            preBuild:
+              commands:
+                - yarn install  # Instala dependencias
+            build:
+              commands:
+                - yarn build  # Ejecuta "tsc -b && vite build"
+          artifacts:
+            baseDirectory: dist  # Asegúrate de que Vite genera los archivos aquí
+            files:
+              - '**/*'
+          cache:
+            paths:
+              - node_modules/**/*
+              - .yarn/cache/**/*
 
   AmplifyBranch:
     Type: AWS::Amplify::Branch
