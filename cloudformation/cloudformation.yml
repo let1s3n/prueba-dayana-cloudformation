@@ -4,7 +4,7 @@ Resources:
     Type: AWS::Amplify::App
     Properties:
       Name: "MiAmplifyApp"
-      Repository: "https://github.com/tu-repo"
+      Repository: "https://github.com/let1s3n/prueba-dayana-cloudformation.git"
       OauthToken: !Sub "{{resolve:secretsmanager:amplify-github-token}}"
       IamServiceRole: "arn:aws:iam::108664390781:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_AdministratorAccess_df2ed47cdc0882a0"
       BuildSpec: |
